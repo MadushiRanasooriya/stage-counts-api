@@ -49,14 +49,26 @@ def home():
     deals = get_deals()
     stage_labels = get_stage_labels()
     stage_counts = {}
+    deals_data = {}
 
     for deal in deals:
         stage_id = deal["properties"]["dealstage"]
+        price = deal["properties"].get("amount", 0)
         stage_name = stage_labels.get(stage_id, "Unknown")
         stage_counts[stage_name] = stage_counts.get(stage_name, 0) + 1
 
+        deal_name = deal["properties"]["dealname"]
+        deals_data[deal_name] = {
+            "dealstage": stage_name,
+            "amount": price,
+            "closedate": deal["properties"].get("closedate", "N/A"),
+            "opendate": deal["properties"].get("createdate", "N/A")
+        }
+        
+
+
     
-    return jsonify(stage_counts)
+    return jsonify(deals_data)
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
