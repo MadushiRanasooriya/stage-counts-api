@@ -16,7 +16,7 @@ def get_deals():
     url = "https://api.hubapi.com/crm/v3/objects/deals"
     headers = HEADERS
     params = {
-        "properties": "dealstage",
+        "properties": "dealstage,amount,dealname,closedate,createdate",
         "limit": 100
     }
 
@@ -48,29 +48,26 @@ def get_stage_labels():
 def home():
     deals = get_deals()
     stage_labels = get_stage_labels()
-    stage_counts = {}
-    deals_data = {}
+
+    deals_data = []
 
     for deal in deals:
-        stage_id = deal["properties"]["dealstage"]
-        price = deal["properties"].get("amount", 0)
+        props = deal.get("properties", {})
+        stage_id = props.get("dealstage", "Unknown")
         stage_name = stage_labels.get(stage_id, "Unknown")
-        stage_counts[stage_name] = stage_counts.get(stage_name, 0) + 1
 
-        deal_name = deal["properties"]["dealname"]
-        deals_data[deal_name] = {
+        deal_entry = {
+            "dealname": props.get("dealname", "Unnamed Deal"),
             "dealstage": stage_name,
-            "amount": price,
-            "closedate": deal["properties"].get("closedate", "N/A"),
-            "opendate": deal["properties"].get("createdate", "N/A")
+            "amount": props.get("amount", 0),
+            "closedate": props.get("closedate", "N/A"),
+            "createdate": props.get("createdate", "N/A")
         }
-        
 
-
+        deals_data.append(deal_entry)
     
     return jsonify(deals_data)
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
-
