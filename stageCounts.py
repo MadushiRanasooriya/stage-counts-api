@@ -57,7 +57,7 @@ def home():
         stage_name = stage_labels.get(stage_id, "Unknown")
 
         deal_entry = {
-            "dealname": props.get("dealname", "Unnamed Deal"),
+            "dealname": props["dealname"],
             "dealstage": stage_name,
             "amount": props.get("amount", 0),
             "closedate": props.get("closedate", "N/A"),
